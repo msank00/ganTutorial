@@ -1,9 +1,11 @@
 
 ---
 
-<p align="center">
-    <h1>Learn GAN</h1>
-</p>
+<h1 align="center">
+  
+  Learn GAN from Scratch
+
+</h1>
 
 ---
 

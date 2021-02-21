@@ -46,7 +46,9 @@ We do this because we are not training the `Generator`. We are just focused on t
 
 ## Early Stopping
 
-Another frequent mistake that you may encounter in GANs training is to stop the training as soon as you see the Generator or Discriminator loss increasing or decreasing abruptly. Often the losses go up or down almost randomly, and there is nothing wrong with that. Keeping an eye on the quality of the generated images during training, as a visual understanding is often more meaningful than some loss numbers
+Another frequent mistake that you may encounter in GANs training is to stop the training as soon as you see the Generator or Discriminator loss increasing or decreasing abruptly. Often the losses go up or down almost randomly, and there is nothing wrong with that. Keeping an eye on the quality of the generated images during training, as a visual understanding is often more meaningful than some loss numbers.
+
+![image](output/loss_curve.png)
 
 ## Mode Collapse and Learning Rate
 

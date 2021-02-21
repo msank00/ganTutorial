@@ -9,7 +9,7 @@
 
 ----
 
-# 💬 How to train GAN:
+# 💬 How to train a tiny GAN:
 
 ![image](assets/architecture_gan_1.png)
 

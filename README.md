@@ -11,7 +11,7 @@
 
 # 💬 How to train GAN:
 
-![image](assets/architecture_gan.png)
+![image](assets/architecture_gan_1.png)
 
 - First flow: Blue arrow
 - Second flow: Pink arrow during model update, when pass the respective labels into loss function. 

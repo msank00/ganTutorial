@@ -1,5 +1,6 @@
 import math
-from typing import Tuple
+from typing import Tuple, Dict
+import numpy as np
 
 import torch
 import torch.nn as nn
@@ -7,6 +8,7 @@ import torch.nn as nn
 from src.models import Discriminator, Generator
 from src.utils import convert_float_matrix_to_int_list, generate_even_data
 
+import matplotlib.pyplot as plt
 
 def train(
     max_int: int = 128,
@@ -45,6 +47,8 @@ def train(
 
     # loss
     loss = nn.BCELoss()
+    gen_loss = []
+    dis_loss = []
 
     for i in range(training_steps):
         # zero the gradients on each iteration
@@ -56,6 +60,8 @@ def train(
         generated_data = generator(noise)
 
         # Generate examples of even real data
+        # true labels: [1,1,1,1,1,1,....] i.e all ones
+        # true data: [[0,0,0,0,1,0,0],....] i.e binary code for even numbers
         true_labels, true_data = generate_even_data(
             max_int, batch_size=batch_size
         )
@@ -65,37 +71,63 @@ def train(
         # Train the generator
         # We invert the labels here and don't train the discriminator because we want the generator
         # to make things the discriminator classifies as true.
+        # true labels: [1,1,1,1,....]
         generator_discriminator_out = discriminator(generated_data)
         generator_loss = loss(
             generator_discriminator_out.squeeze(), true_labels
         )
+        gen_loss.append(generator_loss.item())
         generator_loss.backward()
         generator_optimizer.step()
 
-        # Train the discriminator on the true/generated data
+        # Train the discriminator 
+        # Teach Discriminator to distinguish true data with true label i.e [1,1,1,1,....]
         discriminator_optimizer.zero_grad()
-        true_discriminator_out = discriminator(true_data)
-        true_discriminator_loss = loss(
-            true_discriminator_out.squeeze(), true_labels
+        discriminator_out_true_data = discriminator(true_data)
+        discriminator_loss_true_data = loss(
+            discriminator_out_true_data.squeeze(), true_labels
         )
 
         # add .detach() here think about this
-        generator_discriminator_out = discriminator(generated_data.detach())
-        generator_discriminator_loss = loss(
-            generator_discriminator_out.squeeze(), torch.zeros(batch_size)
+        discriminator_out_fake_data = discriminator(generated_data.detach())
+        fake_labels = torch.zeros(batch_size) # [0,0,0,.....]
+        discriminator_loss_fake_data = loss(
+            discriminator_out_fake_data.squeeze(), fake_labels 
         )
+        # total discriminator loss
         discriminator_loss = (
-            true_discriminator_loss + generator_discriminator_loss
+            discriminator_loss_true_data + discriminator_loss_fake_data
         ) / 2
+        
+        dis_loss.append(discriminator_loss.item())
+        
         discriminator_loss.backward()
         discriminator_optimizer.step()
         if i % print_output_every_n_steps == 0:
             output = convert_float_matrix_to_int_list(generated_data)
             even_count = len(list(filter(lambda x: (x % 2 == 0), output)))
-            print(f"steps: {i}, output: {output}, even count: {even_count}/16")
+            print(f"steps: {i}, output: {output}, even count: {even_count}/16, Gen Loss: {np.round(generator_loss.item(),4)}, Dis Loss: {np.round(discriminator_loss.item(),4)}")
 
-    return generator, discriminator
+    history = {}
+    history['dis_loss'] = dis_loss
+    history['gen_loss'] = gen_loss
 
+    return generator, discriminator, history
+
+def plot_loss(loss_history: Dict):
+    
+    plt.plot(loss_history["dis_loss"], color='blue', linewidth=2, label="dis")
+    plt.plot(loss_history["gen_loss"],  color='orange', linewidth=2, label="gen")    
+    plt.xlabel("Epochs")
+    plt.ylabel("Loss")
+    plt.title("GAN Loss curve")
+    plt.legend()
+    plt.grid(alpha=0.3)
+    plt.tight_layout()
+    plt.savefig("output/loss_curve.png")
+    
 
 if __name__ == "__main__":
-    g, d = train()
+    g, d, history = train()
+    plot_loss(history)
+    

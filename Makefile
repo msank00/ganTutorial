@@ -14,3 +14,6 @@ clean: clean-pyc
 format:
 	isort -rc .
 	black -l 79 .
+
+train:
+	python train.py

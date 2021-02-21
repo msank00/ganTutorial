@@ -72,9 +72,9 @@ def train(
         # We invert the labels here and don't train the discriminator because we want the generator
         # to make things the discriminator classifies as true.
         # true labels: [1,1,1,1,....]
-        generator_discriminator_out = discriminator(generated_data)
+        discriminator_out_gen_data = discriminator(generated_data)
         generator_loss = loss(
-            generator_discriminator_out.squeeze(), true_labels
+            discriminator_out_gen_data.squeeze(), true_labels
         )
         gen_loss.append(generator_loss.item())
         generator_loss.backward()

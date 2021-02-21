@@ -28,9 +28,9 @@ This is the hard part. Read carefully
     - `Gen_Loss = loss(Dis_result_for_Gen_output, True Label)`
     - `Gen_loss.backward()`
 
-![image](https://i.imgur.com/lAXDH37.png)
+![image](https://i.imgur.com/9Uv1pDv.png)
 
-5. **Train Discriminator** 
+1. **Train Discriminator** 
    1. **On the True data:** The discriminator should be able to identify the real data. Pass in a batch of data from the true data set with a vector of all one labels
    2. **On the Fake Generated data:** Pass our generated data into the discriminator, with `detached weights`, and `zero` labels. Because Discriminator should be able to identify the fake data as zero label. Thus dis_loss is average of `True_Dis_Loss and` and `Fake_Dis_Loss` i.e (`generator_discriminator_loss`).
 

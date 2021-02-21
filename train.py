@@ -39,10 +39,10 @@ def train(
 
     # Optimizers
     generator_optimizer = torch.optim.Adam(
-        generator.parameters(), lr=learning_rate
+        generator.parameters(), lr=0.001
     )
     discriminator_optimizer = torch.optim.Adam(
-        discriminator.parameters(), lr=learning_rate
+        discriminator.parameters(), lr=0.001
     )
 
     # loss
